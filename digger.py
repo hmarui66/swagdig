@@ -66,9 +66,12 @@ class Digger:
             for key in obj['paths'][path]:
                 if key == 'parameters':
                     for param in obj['paths'][path][key]:
-                        print(param)
-                        if self.is_matched(param):
-                            hit_param = True
+                        if '$ref' in param:
+                            if self.is_matched(param['$ref'].replace('#/parameters/', '')):
+                                hit_param = True
+                        elif 'name' in param:
+                            if self.is_matched(param['name']):
+                                hit_param = True
                 else:
                     print(key, '->', obj['paths'][path],
                           'hit param: ', hit_param)
