@@ -18,21 +18,28 @@ class Digger:
 
         return self.__exclude_pat.search(key) == None
 
-    def dig_model(self, model):
+    def dig_model(self, model, models):
         if 'allOf' in model:
-            for item in model['allOf']:
-                if self.dig_model(item):
+            for key in model['allOf']:
+                if self.dig_model({key: model['allOf'][key]}, models):
                     return True
             return False
 
-        if 'type' not in model or model['type'] != 'object':
+        if '$ref' in model:
+            ref_name = model['$ref'].replace('#/definitions/', '')
+            if ref_name in models:
+                return self.dig_model(models[ref_name], models)
+
+            return False
+
+        if 'properties' not in model:
             return False
 
         for key in model['properties']:
             if self.is_matched(key):
                 return True
 
-            if self.dig_model(model['properties'][key]):
+            if self.dig_model(model['properties'][key], models):
                 return True
 
         return False
@@ -44,7 +51,7 @@ class Digger:
                 models.append(key)
                 continue
 
-            if self.dig_model(obj['definitions'][key]):
+            if self.dig_model(obj['definitions'][key], obj['definitions']):
                 models.append(key)
                 continue
 
