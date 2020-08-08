@@ -5,8 +5,9 @@ class Digger:
 
     def __init__(self, args):
         self.__query_pat = re.compile(args.query)
-        self.__exclude_pat = re.compile(
-            args.exclude) if hasattr(args, 'exclude') and args.exclude != None else None
+        self.__exclude_pat = re.compile(args.exclude) if hasattr(
+            args, 'exclude'
+        ) and args.exclude != None else None
         self.query = re.compile(args.query)
 
     def is_matched(self, key):
@@ -20,9 +21,10 @@ class Digger:
 
     def dig_model(self, model, models):
         if 'allOf' in model:
-            for key in model['allOf']:
-                if self.dig_model({key: model['allOf'][key]}, models):
+            for item in model['allOf']:
+                if self.dig_model(item, models):
                     return True
+
             return False
 
         if '$ref' in model:

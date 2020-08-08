@@ -78,14 +78,14 @@ class TestDigger(unittest.TestCase):
                 'name': 'matched_with_allOf',
                 'init_args': type('', (object,), {'query': 'foo_id'})(),
                 'args': ({
-                    'allOf': {
-                        '$ref': '#/definitions/baz_model',
-                        'properties': {
+                    'allOf': [
+                        {'$ref': '#/definitions/baz_model'},
+                        {'properties': {
                             'foo_id': {
                                 'type': 'string',
                             },
-                        },
-                    },
+                        }},
+                    ],
                 }, {}),
                 'want': True,
             },
@@ -93,14 +93,14 @@ class TestDigger(unittest.TestCase):
                 'name': 'not_matched_with_allOf',
                 'init_args': type('', (object,), {'query': 'foo_id'})(),
                 'args': ({
-                    'allOf': {
-                        '$ref': '#/definitions/baz_model',
-                        'properties': {
-                            'bar_id': {
+                    'allOf': [
+                        {'$ref': '#/definitions/baz_model'},
+                        {'properties': {
+                            'baz_id': {
                                 'type': 'string',
                             },
-                        },
-                    },
+                        }},
+                    ],
                 }, {}),
                 'want': False,
             },
@@ -152,14 +152,14 @@ class TestDigger(unittest.TestCase):
                 'name': 'matched_with_allOf_refs',
                 'init_args': type('', (object,), {'query': 'foo_id'})(),
                 'args': ({
-                    'allOf': {
-                        '$ref': '#/definitions/baz_model',
-                        'properties': {
+                    'allOf': [
+                        {'$ref': '#/definitions/baz_model'},
+                        {'properties': {
                             'bar_id': {
                                 'type': 'string',
                             },
-                        },
-                    },
+                        }},
+                    ],
                 }, {
                     'baz_model': {
                         'type': 'object',
@@ -176,14 +176,14 @@ class TestDigger(unittest.TestCase):
                 'name': 'not_matched_with_allOf_refs',
                 'init_args': type('', (object,), {'query': 'foo_id'})(),
                 'args': ({
-                    'allOf': {
-                        '$ref': '#/definitions/baz_model',
-                        'properties': {
+                    'allOf': [
+                        {'$ref': '#/definitions/baz_model'},
+                        {'properties': {
                             'bar_id': {
                                 'type': 'string',
                             },
-                        },
-                    },
+                        }},
+                    ],
                 }, {
                     'baz_model': {
                         'type': 'object',
