@@ -149,6 +149,80 @@ class TestDigger(unittest.TestCase):
                 'want': False,
             },
             {
+                'name': 'matched_with_items',
+                'init_args': type('', (object,), {'query': 'foo_id'})(),
+                'args': ({
+                    'type': 'object',
+                    'properties': {
+                        'foo_id': {
+                            'type': 'array',
+                            'items': {'type': 'string'},
+                        }
+                    }
+                }, {}),
+                'want': True,
+            },
+            {
+                'name': 'not_matched_with_items',
+                'init_args': type('', (object,), {'query': 'foo_id'})(),
+                'args': ({
+                    'type': 'object',
+                    'properties': {
+                        'baz_id': {
+                            'type': 'array',
+                            'items': {'type': 'string'},
+                        }
+                    }
+                }, {}),
+                'want': False,
+            },
+            {
+                'name': 'matched_with_items_ref',
+                'init_args': type('', (object,), {'query': 'foo_id'})(),
+                'args': ({
+                    'type': 'object',
+                    'properties': {
+                        'bazs': {
+                            'type': 'array',
+                            'items': {'$ref': '#/definitions/baz_model'},
+                        }
+                    }
+                }, {
+                    'baz_model': {
+                        'type': 'object',
+                        'properties': {
+                            'foo_id': {
+                                'type': 'string',
+                            }
+                        }
+                    },
+                }),
+                'want': True,
+            },
+            {
+                'name': 'not_matched_with_items_ref',
+                'init_args': type('', (object,), {'query': 'foo_id'})(),
+                'args': ({
+                    'type': 'object',
+                    'properties': {
+                        'bazs': {
+                            'type': 'array',
+                            'items': {'$ref': '#/definitions/baz_model'},
+                        }
+                    }
+                }, {
+                    'baz_model': {
+                        'type': 'object',
+                        'properties': {
+                            'bar_id': {
+                                'type': 'string',
+                            }
+                        }
+                    },
+                }),
+                'want': False,
+            },
+            {
                 'name': 'matched_with_allOf_refs',
                 'init_args': type('', (object,), {'query': 'foo_id'})(),
                 'args': ({

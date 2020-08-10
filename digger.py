@@ -34,6 +34,9 @@ class Digger:
 
             return False
 
+        if 'items' in model:
+            return self.dig_model(model['items'], models)
+
         if 'properties' not in model:
             return False
 
@@ -59,6 +62,8 @@ class Digger:
 
         return models
 
+    METHODS = ['get', 'post', 'put', 'delete']
+
     def get_apis(self, models, obj):
         apis = []
         for path in obj['paths']:
@@ -72,6 +77,22 @@ class Digger:
                         elif 'name' in param:
                             if self.is_matched(param['name']):
                                 hit_param = True
+                elif key in self.METHODS:
+                    if 'parameters' not in obj['paths'][path][key]:
+                        continue
+
+                    for param in obj['paths'][path][key]['parameters']:
+                        if '$ref' in param:
+                            if self.is_matched(param['$ref'].replace('#/parameters/', '')):
+                                hit_param = True
+                        elif 'schema' in param:
+                            for prop in param['schema']['properties']:
+                                if self.is_matched(param['name']):
+                                    hit_param = True
+                        elif 'name' in param:
+                            if self.is_matched(param['name']):
+                                hit_param = True
+
                 else:
                     print(key, '->', obj['paths'][path],
                           'hit param: ', hit_param)
