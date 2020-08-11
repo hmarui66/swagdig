@@ -22,9 +22,10 @@ def load_yaml(filepath):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='argparse sample.')
     parser.add_argument('-f', '--filepath', type=str, help='yaml file path')
-    parser.add_argument('-q', '--query', type=str, help='query string')
+    parser.add_argument('-q', '--query', type=str,
+                        help='query string(regex can be used)')
     parser.add_argument('-e', '--exclude', type=str,
-                        help='exclude query string')
+                        help='exclude query string(regex can be used)')
     args = parser.parse_args()
 
     if args.query == None:
