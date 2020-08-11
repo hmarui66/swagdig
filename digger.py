@@ -113,13 +113,11 @@ class Digger:
                         if self.dig_param(param, models):
                             hit_common_param = True
                 elif key in self.METHODS:
-                    if 'parameters' not in obj['paths'][path][key]:
-                        continue
-
                     hit_param = False
-                    for param in obj['paths'][path][key]['parameters']:
-                        if self.dig_param(param, models):
-                            hit_param = True
+                    if 'parameters' in obj['paths'][path][key]:
+                        for param in obj['paths'][path][key]['parameters']:
+                            if self.dig_param(param, models):
+                                hit_param = True
 
                     if hit_common_param or hit_param:
                         apis.append(path + '@' + key)
