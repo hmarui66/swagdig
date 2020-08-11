@@ -62,39 +62,66 @@ class Digger:
 
         return models
 
+    def dig_param(self, param, models):
+        if 'name' in param and self.is_matched(param['name']):
+            return True
+
+        if 'schema' in param:
+            return self.dig_param(param['schema'], models)
+
+        if '$ref' in param:
+            ref_name = param['$ref'].replace('#/definitions/', '')
+            return ref_name in models or self.is_matched(param['$ref'].replace('#/parameters/', ''))
+
+        if 'allOf' in param:
+            for item in param['allOf']:
+                if self.dig_param(item, models):
+                    return True
+
+            return False
+
+        if 'items' in param:
+            if '$ref' in param['items']:
+                return self.dig_param(param['items'], models)
+
+            if 'properties' in param['items']:
+                return self.dig_param(param['items'], models)
+
+            return False
+
+        if 'properties' in param:
+            for key in param['properties']:
+                if self.is_matched(key):
+                    return True
+                if self.dig_param(param['properties'][key], models):
+                    return True
+
+            return False
+
+        return False
+
     METHODS = ['get', 'post', 'put', 'delete']
 
     def get_apis(self, models, obj):
         apis = []
         for path in obj['paths']:
-            hit_param = False
+
+            hit_common_param = False
             for key in obj['paths'][path]:
                 if key == 'parameters':
                     for param in obj['paths'][path][key]:
-                        if '$ref' in param:
-                            if self.is_matched(param['$ref'].replace('#/parameters/', '')):
-                                hit_param = True
-                        elif 'name' in param:
-                            if self.is_matched(param['name']):
-                                hit_param = True
+                        if self.dig_param(param, models):
+                            hit_common_param = True
                 elif key in self.METHODS:
                     if 'parameters' not in obj['paths'][path][key]:
                         continue
 
+                    hit_param = False
                     for param in obj['paths'][path][key]['parameters']:
-                        if '$ref' in param:
-                            if self.is_matched(param['$ref'].replace('#/parameters/', '')):
-                                hit_param = True
-                        elif 'schema' in param:
-                            for prop in param['schema']['properties']:
-                                if self.is_matched(param['name']):
-                                    hit_param = True
-                        elif 'name' in param:
-                            if self.is_matched(param['name']):
-                                hit_param = True
+                        if self.dig_param(param, models):
+                            hit_param = True
 
-                else:
-                    print(key, '->', obj['paths'][path],
-                          'hit param: ', hit_param)
+                    if hit_common_param or hit_param:
+                        apis.append(path + '@' + key)
 
         return apis

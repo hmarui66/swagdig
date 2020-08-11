@@ -37,3 +37,6 @@ if __name__ == '__main__':
 
     models = digger.get_models(obj)
     print('models: ', models)
+
+    apis = digger.get_apis(models, obj)
+    print('apis: ', apis)
