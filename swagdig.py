@@ -42,4 +42,4 @@ if __name__ == '__main__':
     apis = digger.get_apis(models, obj)
     for api in apis:
         path, method = api.split('@')
-        print(method, '\t', path)
+        print('{}\t{}'.format(method, path))
