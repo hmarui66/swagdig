@@ -39,4 +39,6 @@ if __name__ == '__main__':
     print('models: ', models)
 
     apis = digger.get_apis(models, obj)
-    print('apis: ', apis)
+    for api in apis:
+        path, method = api.split('@')
+        print(method, '\t', path)
